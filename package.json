@@ -1,0 +1,19 @@
+{
+  "name": "naver-blog-robot",
+  "version": "0.0.1",
+  "description": "A bot to manage naver blog",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": ".\\node_modules\\.bin\\tsc index"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/puppeteer": "^1.12.4",
+    "typescript": "^3.5.1"
+  },
+  "dependencies": {
+    "puppeteer": "^1.17.0"
+  }
+}
