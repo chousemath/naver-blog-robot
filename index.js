@@ -86,20 +86,20 @@ var sleep = function (ms) {
                 fillLoginPage = _a.sent();
                 err = fillLoginPage;
                 if (err != null) {
-                    console.log(err.message);
+                    console.log('fillLoginPage:', err.message);
                     browser.close();
                     process.exit();
                 }
                 return [4 /*yield*/, sleep(15000)];
             case 5:
                 _a.sent();
-                return [4 /*yield*/, page.screenshot({ path: 'example1.png' })];
+                _a.label = 6;
             case 6:
-                _a.sent();
+                if (!true) return [3 /*break*/, 18];
                 return [4 /*yield*/, page.goto(urlBlogDashboard, { waitUntil: 'networkidle2' })];
             case 7:
                 _a.sent();
-                return [4 /*yield*/, page.screenshot({ path: 'example2.png' })];
+                return [4 /*yield*/, sleep(1000)];
             case 8:
                 _a.sent();
                 return [4 /*yield*/, page.evaluate(function () {
@@ -118,7 +118,7 @@ var sleep = function (ms) {
                 switchToMyComments = _a.sent();
                 err = switchToMyComments;
                 if (err != null) {
-                    console.log(err.message);
+                    console.log('switchToMyComments:', err.message);
                     browser.close();
                     process.exit();
                 }
@@ -126,20 +126,22 @@ var sleep = function (ms) {
             case 10:
                 _a.sent();
                 return [4 /*yield*/, page.evaluate(function () {
-                        return Array.from(document.getElementsByClassName('text_news')).map(function (a) { return a.href; });
+                        return Array.from(document.getElementsByClassName('text_news'))
+                            .filter(function (a) { return a.innerText.indexOf('삭제된 글입니다') === -1; })
+                            .map(function (a) { return a.href; });
                     })];
             case 11:
                 getMyComments = _a.sent();
                 commentLinks = getMyComments;
                 if (commentLinks.length === 0) {
-                    console.log('You do not have any comments');
+                    console.log('commentLinks: You do not have any comments');
                     browser.close();
                     process.exit();
                 }
                 _i = 0, commentLinks_1 = commentLinks;
                 _a.label = 12;
             case 12:
-                if (!(_i < commentLinks_1.length)) return [3 /*break*/, 18];
+                if (!(_i < commentLinks_1.length)) return [3 /*break*/, 17];
                 commentLink = commentLinks_1[_i];
                 console.log(commentLink);
                 commentID = commentLink.split('commentNoPosition=')[1];
@@ -151,7 +153,7 @@ var sleep = function (ms) {
             case 14:
                 frame = _a.sent();
                 if (frame === undefined) {
-                    console.log('Could not find appropriate frame');
+                    console.log('frame: Could not find appropriate frame');
                     browser.close();
                     process.exit();
                 }
@@ -170,21 +172,16 @@ var sleep = function (ms) {
                 findComment = _a.sent();
                 err = findComment;
                 if (err != null) {
-                    console.log(err.message);
+                    console.log('findComment:', err.message);
                     browser.close();
                     process.exit();
                 }
-                return [4 /*yield*/, sleep(1000)];
+                _a.label = 16;
             case 16:
-                _a.sent();
-                _a.label = 17;
-            case 17:
                 _i++;
                 return [3 /*break*/, 12];
-            case 18: return [4 /*yield*/, browser.close()];
-            case 19:
-                _a.sent();
-                return [2 /*return*/];
+            case 17: return [3 /*break*/, 6];
+            case 18: return [2 /*return*/];
         }
     });
 }); })();
