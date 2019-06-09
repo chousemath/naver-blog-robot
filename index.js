@@ -37,6 +37,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var _this = this;
 exports.__esModule = true;
 var puppeteer = require("puppeteer");
+// check for sufficient command line arguments
+if (process.argv.length < 4) {
+    console.log('You did not provide enough arguments to the program');
+    process.exit();
+}
+var credentials = {
+    id: process.argv[2],
+    pw: process.argv[3]
+};
 var urlLoginPage = 'https://nid.naver.com/nidlogin.login';
 var urlBlogDashboard = 'https://section.blog.naver.com/BlogHome.nhn?directoryNo=0&currentPage=1&groupId=0';
 var sleep = function (ms) {
@@ -44,7 +53,7 @@ var sleep = function (ms) {
     return new Promise(function (r) { return setTimeout(r, ms); });
 };
 (function () { return __awaiter(_this, void 0, void 0, function () {
-    var browser, page, viewport, switchToMyComments, getMyComments;
+    var browser, page, viewport, fillLoginPage, err, switchToMyComments, getMyComments, commentLinks, _i, commentLinks_1, commentLink, commentID, frame, findComment;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, puppeteer.launch({ headless: false })];
@@ -55,66 +64,43 @@ var sleep = function (ms) {
                 page = _a.sent();
                 viewport = { width: 1000, height: 1000 };
                 page.setViewport(viewport);
-                return [4 /*yield*/, page.goto(urlLoginPage, { waitUntil: 'networkidle2' })
-                    // const login = await page.evaluate((cred: Credentials): boolean | null => {
-                    //     const id: HTMLElement | null = document.getElementById('id');
-                    //     if (id === null) return null;
-                    //     (id as HTMLInputElement).value = cred.id;
-                    //     const pw: HTMLElement | null = document.getElementById('pw');
-                    //     if (pw === null) return null;
-                    //     (pw as HTMLInputElement).value = cred.pw;
-                    //     const loginForms: Array<Element> = Array.from(document.getElementsByClassName('login_form'));
-                    //     if (loginForms.length === 0) return null;
-                    //     const globalButtons: Array<Element> = Array.from(loginForms[0].getElementsByClassName('btn_global'));
-                    //     if (globalButtons.length === 0) return null;
-                    //     (globalButtons[0] as HTMLInputElement).click();
-                    //     return true;
-                    // }, credentials);
-                    // const result = login;
-                ];
+                page.on('dialog', function (dialog) {
+                    console.log("dialog");
+                    dialog.accept();
+                });
+                return [4 /*yield*/, page.goto(urlLoginPage, { waitUntil: 'networkidle2' })];
             case 3:
                 _a.sent();
-                // const login = await page.evaluate((cred: Credentials): boolean | null => {
-                //     const id: HTMLElement | null = document.getElementById('id');
-                //     if (id === null) return null;
-                //     (id as HTMLInputElement).value = cred.id;
-                //     const pw: HTMLElement | null = document.getElementById('pw');
-                //     if (pw === null) return null;
-                //     (pw as HTMLInputElement).value = cred.pw;
-                //     const loginForms: Array<Element> = Array.from(document.getElementsByClassName('login_form'));
-                //     if (loginForms.length === 0) return null;
-                //     const globalButtons: Array<Element> = Array.from(loginForms[0].getElementsByClassName('btn_global'));
-                //     if (globalButtons.length === 0) return null;
-                //     (globalButtons[0] as HTMLInputElement).click();
-                //     return true;
-                // }, credentials);
-                // const result = login;
-                return [4 /*yield*/, sleep(18000)];
+                return [4 /*yield*/, page.evaluate(function (cred) {
+                        var id = document.getElementById('id');
+                        if (id === null)
+                            return new Error('Input for id could not be found');
+                        id.value = cred.id;
+                        var pw = document.getElementById('pw');
+                        if (pw === null)
+                            return new Error('Input for pw could not be found');
+                        pw.value = cred.pw;
+                        return null;
+                    }, credentials)];
             case 4:
-                // const login = await page.evaluate((cred: Credentials): boolean | null => {
-                //     const id: HTMLElement | null = document.getElementById('id');
-                //     if (id === null) return null;
-                //     (id as HTMLInputElement).value = cred.id;
-                //     const pw: HTMLElement | null = document.getElementById('pw');
-                //     if (pw === null) return null;
-                //     (pw as HTMLInputElement).value = cred.pw;
-                //     const loginForms: Array<Element> = Array.from(document.getElementsByClassName('login_form'));
-                //     if (loginForms.length === 0) return null;
-                //     const globalButtons: Array<Element> = Array.from(loginForms[0].getElementsByClassName('btn_global'));
-                //     if (globalButtons.length === 0) return null;
-                //     (globalButtons[0] as HTMLInputElement).click();
-                //     return true;
-                // }, credentials);
-                // const result = login;
-                _a.sent();
-                return [4 /*yield*/, page.screenshot({ path: 'example1.png' })];
+                fillLoginPage = _a.sent();
+                err = fillLoginPage;
+                if (err != null) {
+                    console.log(err.message);
+                    browser.close();
+                    process.exit();
+                }
+                return [4 /*yield*/, sleep(15000)];
             case 5:
                 _a.sent();
-                return [4 /*yield*/, page.goto(urlBlogDashboard, { waitUntil: 'networkidle2' })];
+                return [4 /*yield*/, page.screenshot({ path: 'example1.png' })];
             case 6:
                 _a.sent();
-                return [4 /*yield*/, page.screenshot({ path: 'example2.png' })];
+                return [4 /*yield*/, page.goto(urlBlogDashboard, { waitUntil: 'networkidle2' })];
             case 7:
+                _a.sent();
+                return [4 /*yield*/, page.screenshot({ path: 'example2.png' })];
+            case 8:
                 _a.sent();
                 return [4 /*yield*/, page.evaluate(function () {
                         // select the 'my comments' tab
@@ -128,23 +114,75 @@ var sleep = function (ms) {
                         anchorTags[0].click();
                         return null;
                     })];
-            case 8:
-                switchToMyComments = _a.sent();
-                switchToMyComments;
-                return [4 /*yield*/, sleep(1000)];
             case 9:
+                switchToMyComments = _a.sent();
+                err = switchToMyComments;
+                if (err != null) {
+                    console.log(err.message);
+                    browser.close();
+                    process.exit();
+                }
+                return [4 /*yield*/, sleep(1000)];
+            case 10:
                 _a.sent();
                 return [4 /*yield*/, page.evaluate(function () {
                         return Array.from(document.getElementsByClassName('text_news')).map(function (a) { return a.href; });
                     })];
-            case 10:
-                getMyComments = _a.sent();
-                console.log(getMyComments);
-                return [4 /*yield*/, page.screenshot({ path: 'example3.png' })];
             case 11:
-                _a.sent();
-                return [4 /*yield*/, browser.close()];
+                getMyComments = _a.sent();
+                commentLinks = getMyComments;
+                if (commentLinks.length === 0) {
+                    console.log('You do not have any comments');
+                    browser.close();
+                    process.exit();
+                }
+                _i = 0, commentLinks_1 = commentLinks;
+                _a.label = 12;
             case 12:
+                if (!(_i < commentLinks_1.length)) return [3 /*break*/, 18];
+                commentLink = commentLinks_1[_i];
+                console.log(commentLink);
+                commentID = commentLink.split('commentNoPosition=')[1];
+                console.log(commentID);
+                return [4 /*yield*/, page.goto(commentLink, { waitUntil: 'networkidle2' })];
+            case 13:
+                _a.sent();
+                return [4 /*yield*/, page.frames().find(function (f) { return f.name() === 'mainFrame'; })];
+            case 14:
+                frame = _a.sent();
+                if (frame === undefined) {
+                    console.log('Could not find appropriate frame');
+                    browser.close();
+                    process.exit();
+                }
+                return [4 /*yield*/, frame.evaluate(function (cid) {
+                        var removeButtons = Array.from(document.getElementsByTagName('a')).filter(function (a) {
+                            var dataAction = a.getAttribute('data-action');
+                            var dataParam = a.getAttribute('data-param');
+                            return dataAction === 'remove' && dataParam && dataParam.indexOf("commentNo:" + cid);
+                        });
+                        if (removeButtons.length === 0)
+                            return new Error('Could not find a remove button');
+                        removeButtons[0].click();
+                        return null;
+                    }, commentID)];
+            case 15:
+                findComment = _a.sent();
+                err = findComment;
+                if (err != null) {
+                    console.log(err.message);
+                    browser.close();
+                    process.exit();
+                }
+                return [4 /*yield*/, sleep(1000)];
+            case 16:
+                _a.sent();
+                _a.label = 17;
+            case 17:
+                _i++;
+                return [3 /*break*/, 12];
+            case 18: return [4 /*yield*/, browser.close()];
+            case 19:
                 _a.sent();
                 return [2 /*return*/];
         }
